@@ -143,4 +143,54 @@ export const chatAPI = {
   },
 };
 
+export const profileAPI = {
+  getProfile: async () => {
+    const response = await api.get('/users/profile');
+    return response.data;
+  },
+
+  getPersonalInformation: async () => {
+    const response = await api.get('/users/personal-information');
+    return response.data;
+  },
+
+  updateProfile: async (profileData) => {
+    const cleanData = Object.fromEntries(
+      Object.entries(profileData).filter(([key, value]) => value !== undefined && value !== null && value !== ''),
+    );
+
+    const response = await api.patch('/users/profile', cleanData);
+    return response.data;
+  },
+
+  updatePersonalInformation: async (personalData) => {
+    const cleanData = Object.fromEntries(
+      Object.entries(personalData).filter(([key, value]) => value !== undefined && value !== null && value !== ''),
+    );
+    const response = await api.patch('/users/information', cleanData);
+    return response.data;
+  },
+
+  updateHealth: async (healthData) => {
+    const cleanData = Object.fromEntries(
+      Object.entries(healthData).filter(([key, value]) => {
+        if (Array.isArray(value)) return true;
+        return value !== undefined && value !== null && value !== '';
+      }),
+    );
+    const response = await api.patch('/users/health', cleanData);
+    return response.data;
+  },
+
+  deleteAccount: async () => {
+    const response = await api.delete('/users/delete-account');
+    return response.data;
+  },
+
+  changePassword: async (userId, passwordData) => {
+    const response = await api.patch('/users/profile', { password: passwordData.new_password });
+    return response.data;
+  },
+};
+
 export default api;
