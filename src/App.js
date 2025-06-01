@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import ChatSidebar from './components/ChatSidebar';
 import ChatView from './components/ChatView';
 import AuthScreen from './components/AuthScreen';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { chatAPI } from './services/api';
 import { getCurrentUserId } from './utils/userUtils';
-import { createTextContent, generateChatTitle, createImageContent, createAudioContent } from './utils/messageUtils';
+import { createTextContent, createImageContent, createAudioContent } from './utils/messageUtils';
 
 function ChatApp() {
   const { isAuthenticated, isLoading: authLoading, user } = useAuth();
@@ -16,22 +17,12 @@ function ChatApp() {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingChats, setIsLoadingChats] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const { chatId: urlChatId } = useParams();
 
   const userId = user?.id || getCurrentUserId();
 
-  useEffect(() => {
-    if (isAuthenticated && userId) {
-      loadUserChats();
-    }
-  }, [isAuthenticated, userId]);
-
-  useEffect(() => {
-    if (currentChatId) {
-      loadChatMessages(currentChatId);
-    }
-  }, [currentChatId]);
-
-  const loadUserChats = async () => {
+  const loadUserChats = useCallback(async () => {
     try {
       setIsLoadingChats(true);
       const userChats = await chatAPI.getUserChats(userId);
@@ -42,7 +33,25 @@ function ChatApp() {
     } finally {
       setIsLoadingChats(false);
     }
-  };
+  }, [userId]);
+
+  useEffect(() => {
+    if (isAuthenticated && userId) {
+      loadUserChats();
+    }
+  }, [isAuthenticated, userId, loadUserChats]);
+
+  useEffect(() => {
+    if (urlChatId) {
+      setCurrentChatId(urlChatId);
+    }
+  }, [urlChatId]);
+
+  useEffect(() => {
+    if (currentChatId) {
+      loadChatMessages(currentChatId);
+    }
+  }, [currentChatId]);
 
   const loadChatMessages = async (chatId) => {
     try {
@@ -59,7 +68,7 @@ function ChatApp() {
   };
 
   const handleSelectChat = (chatId) => {
-    setCurrentChatId(chatId);
+    navigate(`/chat/${chatId}`);
   };
 
   const handleCreateChat = async () => {
@@ -76,14 +85,16 @@ function ChatApp() {
       const newChat = await chatAPI.createChat(newChatData);
 
       setChats((prev) => [newChat, ...prev]);
-
-      setCurrentChatId(newChat.id);
-      setCurrentChat(newChat);
-
-      setMessages(newChat.messages || []);
+      navigate(`/chat/${newChat.id}`);
     } catch (err) {
       console.error('Failed to create chat:', err);
-      setError('Failed to create new chat');
+      if (err.response?.status === 401) {
+        setError('Your session has expired. Please log in again.');
+      } else if (err.response?.status === 400) {
+        setError('Invalid request. Please try again.');
+      } else {
+        setError('Failed to create new chat. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -234,13 +245,12 @@ function ChatApp() {
   const handleDeleteChat = async (chatId) => {
     try {
       await chatAPI.deleteChat(chatId, userId);
-
       setChats((prev) => prev.filter((chat) => chat.id !== chatId));
-
       if (currentChatId === chatId) {
         setCurrentChatId(null);
         setCurrentChat(null);
         setMessages([]);
+        navigate('/');
       }
     } catch (err) {
       console.error('Failed to delete chat:', err);
