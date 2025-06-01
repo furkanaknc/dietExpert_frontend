@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   PlusIcon,
   TrashIcon,
@@ -6,6 +7,7 @@ import {
   ChatBubbleLeftIcon,
   UserIcon,
   ArrowRightStartOnRectangleIcon,
+  Cog6ToothIcon,
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../contexts/AuthContext';
 import { formatMessageTime, truncateText, getMessageDisplayText } from '../utils/messageUtils';
@@ -62,7 +64,8 @@ const ChatSidebar = ({ chats, currentChatId, onSelectChat, onCreateChat, onDelet
     if (user?.isGuest) {
       return 'Guest User';
     }
-    return user?.email?.split('@')[0] || 'User';
+    const firstName = user?.first_name || user?.username || user?.email?.split('@')[0] || 'User';
+    return firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
   };
 
   return (
@@ -177,6 +180,16 @@ const ChatSidebar = ({ chats, currentChatId, onSelectChat, onCreateChat, onDelet
                   <p className="text-sm font-medium text-gray-900">{getUserDisplayName()}</p>
                   <p className="text-xs text-gray-500">{user?.isGuest ? 'Guest Session' : user?.email}</p>
                 </div>
+                {!user?.isGuest && (
+                  <Link
+                    to="/profile"
+                    onClick={() => setShowUserMenu(false)}
+                    className="w-full p-3 text-left flex items-center gap-2 hover:bg-gray-50 transition-colors text-gray-700"
+                  >
+                    <Cog6ToothIcon className="w-4 h-4" />
+                    <span className="text-sm">Profile Settings</span>
+                  </Link>
+                )}
                 <button
                   onClick={handleLogout}
                   className="w-full p-3 text-left flex items-center gap-2 hover:bg-gray-50 transition-colors text-red-600"
