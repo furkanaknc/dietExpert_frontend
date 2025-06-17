@@ -1,6 +1,6 @@
-import React from 'react';
 import { UserIcon, CpuChipIcon, PhotoIcon, SpeakerWaveIcon } from '@heroicons/react/24/outline';
 import { formatMessageTime, getMessageDisplayText, getMediaItems } from '../utils/messageUtils';
+import MarkdownRenderer from './MarkdownRenderer';
 
 const Message = ({ message, isUser, user }) => {
   const displayText = getMessageDisplayText(message);
@@ -35,7 +35,11 @@ const Message = ({ message, isUser, user }) => {
         {/* Text content */}
         {displayText && (
           <div className="prose prose-sm max-w-none">
-            <div className="whitespace-pre-wrap text-gray-800 text-sm leading-relaxed">{displayText}</div>
+            {isUser ? (
+              <div className="whitespace-pre-wrap text-gray-800 text-sm leading-relaxed">{displayText}</div>
+            ) : (
+              <MarkdownRenderer content={displayText} />
+            )}
           </div>
         )}
 
