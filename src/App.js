@@ -5,8 +5,9 @@ import ChatView from './components/ChatView';
 import AuthScreen from './components/AuthScreen';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { chatAPI } from './services/api';
-import { getCurrentUserId } from './utils/userUtils';
+
 import { createTextContent, createImageContent, createAudioContent } from './utils/messageUtils';
+import { parseBackendError } from './utils/errorHandler';
 
 function ChatApp() {
   const { isAuthenticated, isLoading: authLoading, user } = useAuth();
@@ -20,7 +21,7 @@ function ChatApp() {
   const navigate = useNavigate();
   const { chatId: urlChatId } = useParams();
 
-  const userId = user?.id || getCurrentUserId();
+  const userId = user?.id;
 
   const loadUserChats = useCallback(async () => {
     try {
@@ -29,7 +30,7 @@ function ChatApp() {
       setChats(userChats || []);
     } catch (err) {
       console.error('Failed to load chats:', err);
-      setError('Failed to load chats');
+      setError(parseBackendError(err));
     } finally {
       setIsLoadingChats(false);
     }
@@ -61,7 +62,7 @@ function ChatApp() {
       setMessages(chat.messages || []);
     } catch (err) {
       console.error('Failed to load chat:', err);
-      setError('Failed to load chat messages');
+      setError(parseBackendError(err));
       setCurrentChat(null);
       setMessages([]);
     }
@@ -88,13 +89,7 @@ function ChatApp() {
       navigate(`/chat/${newChat.id}`);
     } catch (err) {
       console.error('Failed to create chat:', err);
-      if (err.response?.status === 401) {
-        setError('Your session has expired. Please log in again.');
-      } else if (err.response?.status === 400) {
-        setError('Invalid request. Please try again.');
-      } else {
-        setError('Failed to create new chat. Please try again.');
-      }
+      setError(parseBackendError(err));
     } finally {
       setIsLoading(false);
     }
@@ -131,7 +126,7 @@ function ChatApp() {
         }
       } catch (err) {
         console.error('Failed to send message:', err);
-        setError('Failed to send message');
+        setError(parseBackendError(err));
       } finally {
         setIsLoading(false);
       }
@@ -175,7 +170,7 @@ function ChatApp() {
         }
       } catch (err) {
         console.error('Failed to send image message:', err);
-        setError('Failed to send image');
+        setError(parseBackendError(err));
       } finally {
         setIsLoading(false);
       }
@@ -219,7 +214,7 @@ function ChatApp() {
         }
       } catch (err) {
         console.error('Failed to send audio message:', err);
-        setError('Failed to send audio');
+        setError(parseBackendError(err));
       } finally {
         setIsLoading(false);
       }
@@ -238,7 +233,7 @@ function ChatApp() {
       }
     } catch (err) {
       console.error('Failed to rename chat:', err);
-      setError('Failed to rename chat');
+      setError(parseBackendError(err));
     }
   };
 
@@ -254,7 +249,7 @@ function ChatApp() {
       }
     } catch (err) {
       console.error('Failed to delete chat:', err);
-      setError('Failed to delete chat');
+      setError(parseBackendError(err));
     }
   };
 

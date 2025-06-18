@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import { parseBackendError, parseValidationErrors } from '../utils/errorHandler';
 
 const LoginForm = ({ onSwitchToRegister }) => {
   const [email, setEmail] = useState('');
@@ -8,25 +9,45 @@ const LoginForm = ({ onSwitchToRegister }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
 
-  const { login, loginAsGuest } = useAuth();
+  const { login } = useAuth();
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+    if (fieldErrors.email) {
+      setFieldErrors((prev) => ({ ...prev, email: '' }));
+    }
+  };
+
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+    if (fieldErrors.password) {
+      setFieldErrors((prev) => ({ ...prev, password: '' }));
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
+    setFieldErrors({});
 
     try {
       await login({ email, password });
     } catch (error) {
-      setError(error.response?.data?.message || 'Login failed. Please try again.');
+      const backendError = parseBackendError(error);
+      const validationErrors = parseValidationErrors(error);
+
+      if (Object.keys(validationErrors).length > 0) {
+        setFieldErrors(validationErrors);
+        setError('Please fix the errors below:');
+      } else {
+        setError(backendError);
+      }
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleGuestLogin = () => {
-    loginAsGuest();
   };
 
   return (
@@ -51,11 +72,14 @@ const LoginForm = ({ onSwitchToRegister }) => {
               type="email"
               id="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+              onChange={handleEmailChange}
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors ${
+                fieldErrors.email ? 'border-red-300 bg-red-50' : 'border-gray-300'
+              }`}
               placeholder="Enter your email"
               required
             />
+            {fieldErrors.email && <p className="mt-1 text-sm text-red-600">{fieldErrors.email}</p>}
           </div>
 
           <div>
@@ -67,8 +91,10 @@ const LoginForm = ({ onSwitchToRegister }) => {
                 type={showPassword ? 'text' : 'password'}
                 id="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                onChange={handlePasswordChange}
+                className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors ${
+                  fieldErrors.password ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                }`}
                 placeholder="Enter your password"
                 required
               />
@@ -80,6 +106,7 @@ const LoginForm = ({ onSwitchToRegister }) => {
                 {showPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
               </button>
             </div>
+            {fieldErrors.password && <p className="mt-1 text-sm text-red-600">{fieldErrors.password}</p>}
           </div>
 
           <button
@@ -90,24 +117,6 @@ const LoginForm = ({ onSwitchToRegister }) => {
             {isLoading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
-
-        <div className="mt-6">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or continue as</span>
-            </div>
-          </div>
-
-          <button
-            onClick={handleGuestLogin}
-            className="mt-4 w-full bg-gray-100 text-gray-700 py-3 px-4 rounded-lg font-medium hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
-          >
-            Continue as Guest
-          </button>
-        </div>
 
         <div className="mt-8 text-center">
           <p className="text-gray-600">

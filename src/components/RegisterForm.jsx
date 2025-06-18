@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import { parseBackendError, parseValidationErrors } from '../utils/errorHandler';
 
 const RegisterForm = ({ onSwitchToLogin }) => {
   const [formData, setFormData] = useState({
@@ -14,6 +15,7 @@ const RegisterForm = ({ onSwitchToLogin }) => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const [success, setSuccess] = useState(false);
 
   const { register } = useAuth();
@@ -24,6 +26,14 @@ const RegisterForm = ({ onSwitchToLogin }) => {
       ...prev,
       [name]: value,
     }));
+
+    // Clear field-specific error when user starts typing
+    if (fieldErrors[name]) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        [name]: '',
+      }));
+    }
   };
 
   const validateForm = () => {
@@ -54,6 +64,7 @@ const RegisterForm = ({ onSwitchToLogin }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setFieldErrors({});
 
     if (!validateForm()) {
       return;
@@ -67,7 +78,7 @@ const RegisterForm = ({ onSwitchToLogin }) => {
         last_name: formData.last_name,
         email: formData.email,
         password: formData.password,
-        status: 'ACTIVE', // Based on your backend schema
+        status: 'ACTIVE',
       };
 
       await register(userData);
@@ -78,7 +89,15 @@ const RegisterForm = ({ onSwitchToLogin }) => {
         onSwitchToLogin();
       }, 2000);
     } catch (error) {
-      setError(error.response?.data?.message || 'Registration failed. Please try again.');
+      const backendError = parseBackendError(error);
+      const validationErrors = parseValidationErrors(error);
+
+      if (Object.keys(validationErrors).length > 0) {
+        setFieldErrors(validationErrors);
+        setError('Please fix the errors below:');
+      } else {
+        setError(backendError);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -124,10 +143,13 @@ const RegisterForm = ({ onSwitchToLogin }) => {
                 name="first_name"
                 value={formData.first_name}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors ${
+                  fieldErrors.first_name ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                }`}
                 placeholder="John"
                 required
               />
+              {fieldErrors.first_name && <p className="mt-1 text-sm text-red-600">{fieldErrors.first_name}</p>}
             </div>
             <div>
               <label htmlFor="last_name" className="block text-sm font-medium text-gray-700 mb-2">
@@ -139,10 +161,13 @@ const RegisterForm = ({ onSwitchToLogin }) => {
                 name="last_name"
                 value={formData.last_name}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors ${
+                  fieldErrors.last_name ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                }`}
                 placeholder="Doe"
                 required
               />
+              {fieldErrors.last_name && <p className="mt-1 text-sm text-red-600">{fieldErrors.last_name}</p>}
             </div>
           </div>
 
@@ -156,10 +181,13 @@ const RegisterForm = ({ onSwitchToLogin }) => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors ${
+                fieldErrors.email ? 'border-red-300 bg-red-50' : 'border-gray-300'
+              }`}
               placeholder="john@example.com"
               required
             />
+            {fieldErrors.email && <p className="mt-1 text-sm text-red-600">{fieldErrors.email}</p>}
           </div>
 
           <div>
@@ -173,7 +201,9 @@ const RegisterForm = ({ onSwitchToLogin }) => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors ${
+                  fieldErrors.password ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                }`}
                 placeholder="At least 6 characters"
                 required
               />
@@ -185,6 +215,7 @@ const RegisterForm = ({ onSwitchToLogin }) => {
                 {showPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
               </button>
             </div>
+            {fieldErrors.password && <p className="mt-1 text-sm text-red-600">{fieldErrors.password}</p>}
           </div>
 
           <div>

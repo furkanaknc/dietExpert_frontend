@@ -11,7 +11,6 @@ export const useAuth = () => {
   return context;
 };
 
-// Cookie utility functions
 const setCookie = (name, value, days = 7) => {
   const expires = new Date();
   expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
@@ -38,7 +37,6 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Check for existing authentication on app load
   useEffect(() => {
     const checkAuth = async () => {
       const token = getCookie('authToken');
@@ -46,9 +44,8 @@ export const AuthProvider = ({ children }) => {
         try {
           const verification = await authAPI.verifyToken(token);
           if (verification.verified && verification.user) {
-            // Use the actual user data from verification
             const userData = {
-              id: verification.user.id, // Real user ID from database
+              id: verification.user.id,
               email: verification.user.email,
               first_name: verification.user.first_name,
               last_name: verification.user.last_name,
@@ -58,7 +55,6 @@ export const AuthProvider = ({ children }) => {
             setUser(userData);
             setIsAuthenticated(true);
           } else {
-            // Token is invalid, clear it
             deleteCookie('authToken');
             deleteCookie('user');
           }
@@ -74,7 +70,6 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
 
-  // Listen for logout events from API interceptor
   useEffect(() => {
     const handleLogout = () => {
       setUser(null);
@@ -89,13 +84,11 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await authAPI.login(credentials);
 
-      // After successful login, verify to get user data
       const verification = await authAPI.verifyToken(response.access_token);
 
       if (verification.verified && verification.user) {
-        // Use the actual user data from verification
         const userData = {
-          id: verification.user.id, // Real user ID from database
+          id: verification.user.id,
           email: verification.user.email,
           first_name: verification.user.first_name,
           last_name: verification.user.last_name,
@@ -115,8 +108,6 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       await authAPI.register(userData);
-      // After successful registration, you might want to auto-login
-      // or redirect to login page
       return { success: true };
     } catch (error) {
       throw error;
@@ -129,21 +120,6 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(false);
   };
 
-  // Guest login for users who don't want to register
-  const loginAsGuest = () => {
-    const guestUser = {
-      id: `guest_${Math.random().toString(36).substring(2, 10)}`,
-      email: 'guest@dietexpert.com',
-      isGuest: true,
-    };
-
-    setCookie('user', JSON.stringify(guestUser), 7);
-    setUser(guestUser);
-    setIsAuthenticated(true);
-
-    return guestUser;
-  };
-
   const value = {
     user,
     setUser,
@@ -152,7 +128,6 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
-    loginAsGuest,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

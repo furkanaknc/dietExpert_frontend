@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { profileAPI } from '../services/api';
 import { ArrowLeftIcon, UserIcon, KeyIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { Link, Navigate } from 'react-router-dom';
+import { parseBackendError } from '../utils/errorHandler';
 
 const ProfilePage = () => {
   const { user, setUser, isAuthenticated, isLoading } = useAuth();
@@ -109,7 +110,7 @@ const ProfilePage = () => {
     }
   };
 
-  if (!isLoading && (!isAuthenticated || user?.isGuest)) {
+  if (!isLoading && !isAuthenticated) {
     return <Navigate to="/" replace />;
   }
 
@@ -201,10 +202,9 @@ const ProfilePage = () => {
       setUser({ ...user, ...updatedUser });
       setSuccess('Profile updated successfully!');
 
-      // Update original data to reflect the new state
       setOriginalProfileData(profileData);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to update profile');
+      setError(parseBackendError(err));
     } finally {
       setLoading(false);
     }
@@ -217,7 +217,6 @@ const ProfilePage = () => {
     setSuccess('');
 
     try {
-      // Only send fields that have changed
       const changedFields = {};
       Object.keys(personalData).forEach((key) => {
         const currentValue = personalData[key];
@@ -245,10 +244,9 @@ const ProfilePage = () => {
       await profileAPI.updatePersonalInformation(changedFields);
       setSuccess('Personal information updated successfully!');
 
-      // Update original data to reflect the new state
       setOriginalPersonalData(personalData);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to update personal information');
+      setError(parseBackendError(err));
     } finally {
       setLoading(false);
     }
@@ -298,7 +296,6 @@ const ProfilePage = () => {
       await profileAPI.updateHealth(changedFields);
       setSuccess('Health information updated successfully!');
 
-      // Update original data to reflect the new state
       setOriginalHealthData({
         ...healthData,
         dietary_restrictions: currentDietaryRestrictions,
@@ -306,7 +303,7 @@ const ProfilePage = () => {
         allergies: currentAllergies,
       });
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to update health information');
+      setError(parseBackendError(err));
     } finally {
       setLoading(false);
     }
@@ -340,7 +337,7 @@ const ProfilePage = () => {
       });
       setShowPasswordForm(false);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to change password');
+      setError(parseBackendError(err));
     } finally {
       setLoading(false);
     }
@@ -868,7 +865,7 @@ const ProfilePage = () => {
                 <div className="space-y-3">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Account Type</span>
-                    <span className="font-medium">{user?.isGuest ? 'Guest' : 'Registered'}</span>
+                    <span className="font-medium">Registered</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Status</span>
