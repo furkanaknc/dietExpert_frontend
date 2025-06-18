@@ -8,6 +8,7 @@ import {
   UserIcon,
   ArrowRightStartOnRectangleIcon,
   Cog6ToothIcon,
+  ChartBarIcon,
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../contexts/AuthContext';
 import { formatMessageTime, truncateText, getMessageDisplayText } from '../utils/messageUtils';
@@ -181,14 +182,24 @@ const ChatSidebar = ({ chats, currentChatId, onSelectChat, onCreateChat, onDelet
                   <p className="text-xs text-gray-500">{user?.isGuest ? 'Guest Session' : user?.email}</p>
                 </div>
                 {!user?.isGuest && (
-                  <Link
-                    to="/profile"
-                    onClick={() => setShowUserMenu(false)}
-                    className="w-full p-3 text-left flex items-center gap-2 hover:bg-gray-50 transition-colors text-gray-700"
-                  >
-                    <Cog6ToothIcon className="w-4 h-4" />
-                    <span className="text-sm">Profile Settings</span>
-                  </Link>
+                  <>
+                    <Link
+                      to="/nutrition"
+                      onClick={() => setShowUserMenu(false)}
+                      className="w-full p-3 text-left flex items-center gap-2 hover:bg-gray-50 transition-colors text-gray-700"
+                    >
+                      <ChartBarIcon className="w-4 h-4" />
+                      <span className="text-sm">Calorie Tracking</span>
+                    </Link>
+                    <Link
+                      to="/profile"
+                      onClick={() => setShowUserMenu(false)}
+                      className="w-full p-3 text-left flex items-center gap-2 hover:bg-gray-50 transition-colors text-gray-700"
+                    >
+                      <Cog6ToothIcon className="w-4 h-4" />
+                      <span className="text-sm">Profile Settings</span>
+                    </Link>
+                  </>
                 )}
                 <button
                   onClick={handleLogout}

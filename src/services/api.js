@@ -193,4 +193,72 @@ export const profileAPI = {
   },
 };
 
+export const nutritionAPI = {
+  getDailyStats: async (date) => {
+    const params = date ? `?date=${date}` : '';
+    const response = await api.get(`/nutrition/daily-stats${params}`);
+    return response.data;
+  },
+
+  getWeeklyStats: async (weekStart) => {
+    const params = weekStart ? `?weekStart=${weekStart}` : '';
+    const response = await api.get(`/nutrition/weekly-stats${params}`);
+    return response.data;
+  },
+
+  getMonthlyStats: async (year, month) => {
+    const params = new URLSearchParams();
+    if (year) params.append('year', year);
+    if (month) params.append('month', month);
+    const queryString = params.toString() ? `?${params.toString()}` : '';
+    const response = await api.get(`/nutrition/monthly-stats${queryString}`);
+    return response.data;
+  },
+
+  getDailyChartData: async (days = 7) => {
+    const response = await api.get(`/nutrition/chart-data/daily?days=${days}`);
+    return response.data;
+  },
+
+  getWeeklyChartData: async (weeks = 4) => {
+    const response = await api.get(`/nutrition/chart-data/weekly?weeks=${weeks}`);
+    return response.data;
+  },
+
+  getMonthlyChartData: async (months = 3) => {
+    const response = await api.get(`/nutrition/chart-data/monthly?months=${months}`);
+    return response.data;
+  },
+
+  getNutritionBreakdown: async (date) => {
+    const params = date ? `?date=${date}` : '';
+    const response = await api.get(`/nutrition/nutrition-breakdown${params}`);
+    return response.data;
+  },
+
+  getFoodEntries: async (startDate, endDate) => {
+    const params = new URLSearchParams();
+    if (startDate) params.append('startDate', startDate);
+    if (endDate) params.append('endDate', endDate);
+    const queryString = params.toString() ? `?${params.toString()}` : '';
+    const response = await api.get(`/nutrition/food-entries${queryString}`);
+    return response.data;
+  },
+
+  deleteFoodEntry: async (entryId) => {
+    const response = await api.delete(`/nutrition/food-entries/${entryId}`);
+    return response.data;
+  },
+
+  updateFoodEntry: async (entryId, updateData) => {
+    const response = await api.put(`/nutrition/food-entries/${entryId}`, updateData);
+    return response.data;
+  },
+
+  parseFood: async (content, messageId) => {
+    const response = await api.post('/nutrition/parse-food', { content, messageId });
+    return response.data;
+  },
+};
+
 export default api;

@@ -1,6 +1,7 @@
 import { UserIcon, CpuChipIcon, PhotoIcon, SpeakerWaveIcon } from '@heroicons/react/24/outline';
 import { formatMessageTime, getMessageDisplayText, getMediaItems } from '../utils/messageUtils';
 import MarkdownRenderer from './MarkdownRenderer';
+import CalorieNotification from './CalorieNotification';
 
 const Message = ({ message, isUser, user }) => {
   const displayText = getMessageDisplayText(message);
@@ -100,6 +101,9 @@ const Message = ({ message, isUser, user }) => {
           </div>
         )}
 
+        {/* Calorie notification for user messages with food content */}
+        {isUser && displayText && <CalorieNotification messageId={message.id} content={displayText} />}
+
         {/* Token usage for AI messages */}
         {!isUser && message.usage && (
           <div className="mt-1 text-xs text-gray-400">Tokens: {message.usage.totalTokens}</div>
@@ -110,4 +114,3 @@ const Message = ({ message, isUser, user }) => {
 };
 
 export default Message;
- 
