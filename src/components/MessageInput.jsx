@@ -134,7 +134,7 @@ const MessageInput = ({ onSendMessage, onSendImageMessage, onSendAudioMessage, i
   };
 
   return (
-    <div className="border-t border-gray-200 bg-white p-3">
+    <div className="border-t border-gray-200 bg-white p-2 sm:p-3">
       {/* Error message */}
       {error && <div className="mb-2 p-2 bg-red-50 border border-red-200 rounded-md text-red-700 text-xs">{error}</div>}
 
@@ -177,7 +177,7 @@ const MessageInput = ({ onSendMessage, onSendImageMessage, onSendAudioMessage, i
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="flex gap-2 items-end">
+      <form onSubmit={handleSubmit} className="flex gap-1 sm:gap-2 items-end">
         {/* Image upload button */}
         <div className="relative">
           <input
@@ -192,7 +192,7 @@ const MessageInput = ({ onSendMessage, onSendImageMessage, onSendAudioMessage, i
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={disabled || isLoading || isRecording || audioBlob}
-            className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-1.5 sm:p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             title="Upload food photo"
           >
             <PhotoIcon className="h-4 w-4" />
@@ -205,7 +205,7 @@ const MessageInput = ({ onSendMessage, onSendImageMessage, onSendAudioMessage, i
             type="button"
             onClick={isRecording ? stopRecording : startRecording}
             disabled={disabled || isLoading || selectedImage}
-            className={`p-2 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+            className={`p-1.5 sm:p-2 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
               isRecording
                 ? 'bg-red-500 text-white hover:bg-red-600'
                 : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
@@ -230,7 +230,7 @@ const MessageInput = ({ onSendMessage, onSendImageMessage, onSendAudioMessage, i
                   : 'Ask about nutrition, diet plans, recipes...'
             }
             disabled={disabled || isLoading || isRecording}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed resize-none text-sm"
+            className="w-full px-2 sm:px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed resize-none text-sm"
             rows="1"
             style={{
               minHeight: '36px',
@@ -244,7 +244,7 @@ const MessageInput = ({ onSendMessage, onSendImageMessage, onSendAudioMessage, i
         <button
           type="submit"
           disabled={(!message.trim() && !selectedImage && !audioBlob) || disabled || isLoading || isRecording}
-          className="p-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+          className="p-1.5 sm:p-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
           title="Send message"
         >
           {isLoading ? (

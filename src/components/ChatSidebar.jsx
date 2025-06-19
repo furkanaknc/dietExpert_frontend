@@ -13,7 +13,17 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 import { formatMessageTime, truncateText, getMessageDisplayText } from '../utils/messageUtils';
 
-const ChatSidebar = ({ chats, currentChatId, onSelectChat, onCreateChat, onDeleteChat, onRenameChat, isLoading }) => {
+const ChatSidebar = ({
+  chats,
+  currentChatId,
+  onSelectChat,
+  onCreateChat,
+  onDeleteChat,
+  onRenameChat,
+  isLoading,
+  isSidebarOpen,
+  onToggleSidebar,
+}) => {
   const [editingChatId, setEditingChatId] = useState(null);
   const [editTitle, setEditTitle] = useState('');
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -70,7 +80,24 @@ const ChatSidebar = ({ chats, currentChatId, onSelectChat, onCreateChat, onDelet
   };
 
   return (
-    <div className="w-64 bg-white border-r border-gray-200 flex flex-col h-full">
+    <div
+      className={`
+      ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} 
+      lg:translate-x-0 
+      fixed lg:relative 
+      w-64 
+      bg-white 
+      border-r 
+      border-gray-200 
+      flex 
+      flex-col 
+      h-full 
+      z-50 
+      transition-transform 
+      duration-300 
+      ease-in-out
+    `}
+    >
       {/* Header */}
       <div className="p-3 border-b border-gray-100">
         <button
@@ -98,7 +125,13 @@ const ChatSidebar = ({ chats, currentChatId, onSelectChat, onCreateChat, onDelet
             {chats.map((chat) => (
               <div
                 key={chat.id}
-                onClick={() => onSelectChat(chat.id)}
+                onClick={() => {
+                  onSelectChat(chat.id);
+                  // Close sidebar on mobile after selecting a chat
+                  if (onToggleSidebar) {
+                    onToggleSidebar(false);
+                  }
+                }}
                 className={`relative group p-2 mb-1 rounded-md cursor-pointer transition-all duration-200 ${
                   currentChatId === chat.id ? 'bg-blue-50 border border-blue-200 shadow-sm' : 'hover:bg-gray-50'
                 }`}

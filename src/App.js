@@ -18,6 +18,7 @@ function ChatApp() {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingChats, setIsLoadingChats] = useState(true);
   const [error, setError] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const { chatId: urlChatId } = useParams();
 
@@ -269,7 +270,12 @@ function ChatApp() {
   }
 
   return (
-    <div className="h-screen flex bg-gray-100">
+    <div className="h-screen flex bg-gray-100 relative">
+      {/* Mobile Overlay */}
+      {isSidebarOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden" onClick={() => setIsSidebarOpen(false)} />
+      )}
+
       {/* Sidebar */}
       <ChatSidebar
         chats={chats}
@@ -279,6 +285,8 @@ function ChatApp() {
         onDeleteChat={handleDeleteChat}
         onRenameChat={handleRenameChat}
         isLoading={isLoadingChats}
+        isSidebarOpen={isSidebarOpen}
+        onToggleSidebar={setIsSidebarOpen}
       />
 
       {/* Main Chat Area */}
@@ -291,6 +299,8 @@ function ChatApp() {
         isLoading={isLoading}
         error={error}
         user={user}
+        onToggleSidebar={() => setIsSidebarOpen(true)}
+        isSidebarOpen={isSidebarOpen}
       />
     </div>
   );

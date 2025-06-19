@@ -371,20 +371,20 @@ const ProfilePage = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Link to="/" className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-              <ArrowLeftIcon className="h-5 w-5 text-gray-600" />
+        <div className="max-w-4xl mx-auto px-2 sm:px-4 py-3 sm:py-4">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <Link to="/" className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors">
+              <ArrowLeftIcon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600" />
             </Link>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Profile Settings</h1>
-              <p className="text-sm text-gray-600">Manage your account information</p>
+              <h1 className="text-lg sm:text-2xl font-bold text-gray-900">Profile Settings</h1>
+              <p className="text-xs sm:text-sm text-gray-600 hidden sm:block">Manage your account information</p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
         {/* Error/Success Messages */}
         {error && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -397,25 +397,25 @@ const ProfilePage = () => {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2">
             {/* Tab Navigation */}
-            <div className="bg-white rounded-lg shadow-sm border mb-6">
-              <div className="flex border-b border-gray-200">
+            <div className="bg-white rounded-lg shadow-sm border mb-4 sm:mb-6">
+              <div className="flex border-b border-gray-200 overflow-x-auto">
                 <button
                   onClick={() => setActiveTab('profile')}
-                  className={`px-6 py-3 text-sm font-medium ${
+                  className={`px-3 sm:px-6 py-3 text-xs sm:text-sm font-medium whitespace-nowrap ${
                     activeTab === 'profile'
                       ? 'text-blue-600 border-b-2 border-blue-600'
                       : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >
-                  Profile Information
+                  Profile Info
                 </button>
                 <button
                   onClick={() => setActiveTab('personal')}
-                  className={`px-6 py-3 text-sm font-medium ${
+                  className={`px-3 sm:px-6 py-3 text-xs sm:text-sm font-medium whitespace-nowrap ${
                     activeTab === 'personal'
                       ? 'text-blue-600 border-b-2 border-blue-600'
                       : 'text-gray-500 hover:text-gray-700'
@@ -425,7 +425,7 @@ const ProfilePage = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab('health')}
-                  className={`px-6 py-3 text-sm font-medium ${
+                  className={`px-3 sm:px-6 py-3 text-xs sm:text-sm font-medium whitespace-nowrap ${
                     activeTab === 'health'
                       ? 'text-blue-600 border-b-2 border-blue-600'
                       : 'text-gray-500 hover:text-gray-700'

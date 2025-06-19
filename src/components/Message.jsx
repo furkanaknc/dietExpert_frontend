@@ -16,14 +16,16 @@ const Message = ({ message, isUser, user }) => {
   };
 
   return (
-    <div className={`flex gap-3 px-4 py-3 border-b border-gray-50 ${isUser ? 'bg-blue-50/30' : 'bg-white'}`}>
+    <div
+      className={`flex gap-2 sm:gap-3 px-2 sm:px-4 py-3 border-b border-gray-50 ${isUser ? 'bg-blue-50/30' : 'bg-white'}`}
+    >
       {/* Avatar */}
       <div
-        className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center ${
+        className={`flex-shrink-0 w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center ${
           isUser ? 'bg-blue-600 text-white' : 'bg-green-600 text-white'
         }`}
       >
-        {isUser ? <UserIcon className="h-4 w-4" /> : <CpuChipIcon className="h-4 w-4" />}
+        {isUser ? <UserIcon className="h-3 w-3 sm:h-4 sm:w-4" /> : <CpuChipIcon className="h-3 w-3 sm:h-4 sm:w-4" />}
       </div>
 
       {/* Message Content */}
@@ -50,7 +52,7 @@ const Message = ({ message, isUser, user }) => {
             {mediaItems.map((item, index) => (
               <div key={index}>
                 {item.type === 'IMAGE' && (
-                  <div className="max-w-sm">
+                  <div className="max-w-xs sm:max-w-sm">
                     <div className="flex items-center gap-2 mb-1">
                       <PhotoIcon className="h-3 w-3 text-gray-500" />
                       <span className="text-xs text-gray-600">Image</span>
@@ -60,7 +62,7 @@ const Message = ({ message, isUser, user }) => {
                         src={item.image_url}
                         alt={item.metadata?.alt_text || 'Uploaded image'}
                         className="rounded-lg border border-gray-200 max-w-full h-auto"
-                        style={{ maxHeight: '250px' }}
+                        style={{ maxHeight: '200px' }}
                       />
                     ) : (
                       <div className="w-full h-24 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center">
